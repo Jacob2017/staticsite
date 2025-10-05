@@ -10,7 +10,9 @@ def extract_title(markdown: str) -> str:
     raise ValueError("No h1 found")
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(
+    from_path: str, template_path: str, dest_path: str, basepath: str
+) -> None:
     print(f"Generating path from {from_path} to {dest_path} using {template_path}")
 
     with open(from_path) as input_file:
@@ -21,8 +23,11 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
     html_node = markdown_to_html_node(markdown)
     title = extract_title(markdown)
-    final_html = html_template.replace("{{ Title }}", title).replace(
-        "{{ Content }}", html_node.to_html()
+    final_html = (
+        html_template.replace("{{ Title }}", title)
+        .replace("{{ Content }}", html_node.to_html())
+        .replace('href="/', f'href="{basepath}')
+        .replace('src="/', f'src="{basepath}')
     )
 
     dest_dir = os.path.dirname(dest_path)
@@ -33,7 +38,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
 
 def generate_pages_recursive(
-    dir_path_content: str, template_path: str, dest_dir_path: str
+    dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str
 ) -> None:
     for location in os.listdir(dir_path_content):
         path = os.path.join(dir_path_content, location)
@@ -41,8 +46,8 @@ def generate_pages_recursive(
             current_main, current_ext = os.path.splitext(location)
             if current_ext == ".md":
                 dest = os.path.join(dest_dir_path, "".join([current_main, ".html"]))
-                generate_page(path, template_path, dest)
+                generate_page(path, template_path, dest, basepath)
         if os.path.isdir(path):
             dest = os.path.join(dest_dir_path, location)
             os.mkdir(dest)
-            generate_pages_recursive(path, template_path, dest)
+            generate_pages_recursive(path, template_path, dest, basepath)
