@@ -74,3 +74,11 @@ class TestExtractMarkdown(unittest.TestCase):
         result = extract_markdown_links(text)
         expected = []
         self.assertEqual(result, expected)
+
+    def test_starting_with_link(self):
+        text = "[Why Glorfindel is More Impressive than Legolas](/blog/glorfindel) and then some text."
+        result = extract_markdown_links(text)
+        expected = [
+            ("Why Glorfindel is More Impressive than Legolas", "/blog/glorfindel")
+        ]
+        self.assertEqual(result, expected)
