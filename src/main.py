@@ -16,6 +16,8 @@ def main():
 
 
 def copy_directory(source_dir: str, dest_dir: str) -> None:
+    if not os.path.isdir(dest_dir):
+        os.mkdir(dest_dir)
     print(f"deleting contents of {dest_dir}")
     delete_contents(dest_dir)
     print(f"copying contents from {source_dir}")
